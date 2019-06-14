@@ -1,0 +1,9 @@
+Opus encoder params:
+name    type                    jni equ.
+pcm     opus_int16(short)       jshortArray()
+data    unsigned char*          jbyteArray()
+
+conversion flow:
+(Java) byte[] -> (JNI) -> jbyteArray -> jshortArray -> short* -> (Opus)
+
+Opus decoder params
