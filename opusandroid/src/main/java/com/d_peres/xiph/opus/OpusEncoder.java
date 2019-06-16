@@ -1,5 +1,9 @@
 package com.d_peres.xiph.opus;
 
+import com.d_peres.xiph.opus.annotation.Application;
+import com.d_peres.xiph.opus.annotation.Channels;
+import com.d_peres.xiph.opus.annotation.SampleRate;
+
 public class OpusEncoder {
 	
 	private long enc_address;
@@ -14,7 +18,10 @@ public class OpusEncoder {
 	private native void native_destroy();
 	
 	//todo: add documentation
-	public OpusEncoder(int sampleRate, int numChannels, int opusApplication) {
+	public OpusEncoder(
+			@SampleRate int sampleRate,
+			@Channels int numChannels,
+			@Application int opusApplication) {
 		OpusError.throwOnError(native_init(sampleRate, numChannels, opusApplication));
 	}
 	
