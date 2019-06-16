@@ -1,6 +1,6 @@
 package com.d_peres.xiph.opus;
 
-public class OpusEncoder implements OpusConstants {
+public class OpusEncoder {
 	
 	private long enc_address;
 	
