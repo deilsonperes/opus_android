@@ -24,4 +24,9 @@ public interface OpusConstants {
 	int FS_960  = 960;
 	int FS_1920 = 1920;
 	int FS_2880 = 2880;
+	
+	// Opus applications
+	int OPUS_APPLICATION_AUDIO = 2049;
+	int OPUS_APPLICATION_VOIP  = 2048;
+	int OPUS_APPLICATION_RESTRICTED_LOWDELAY = 2051;
 }
