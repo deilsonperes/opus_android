@@ -20,9 +20,9 @@ public class OpusDecoder {
 		OpusError.throwOnError(native_init(sampleRate, numChannels));
 	}
 	
-	public int decode(byte[] in, short[] out) {
-		int ret = 0;
-		OpusError.throwOnError(ret = native_decode(in, in.length, out));
+	public int decode(byte[] in, int num_samples, short[] out) {
+		int ret;
+		OpusError.throwOnError(ret = native_decode(in, num_samples, out));
 		return ret;
 	}
 	
