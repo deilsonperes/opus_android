@@ -56,8 +56,6 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1encode_1s
     short* input  = env->GetShortArrayElements(pcm_in, JNI_FALSE);
     auto * output = reinterpret_cast<unsigned char *>(env->GetByteArrayElements(opus_out, JNI_FALSE));
 
-    // using recommended 4kB on output buffer size
-    // todo: use a user defined value as 'max_data_bytes'
     encoded_bytes = opus_encode(enc, input, num_samples, output, max_out_len);
 
     env->ReleaseShortArrayElements(pcm_in, input, JNI_ABORT);
