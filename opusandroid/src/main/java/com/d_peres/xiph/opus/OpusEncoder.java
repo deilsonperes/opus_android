@@ -31,12 +31,14 @@ public class OpusEncoder {
 		return ret;
 	}
 	
+	/* temporarely removed to implement an endianess option and do tests
 	public int encode(byte[] in, int numSamples, byte[] out) {
 		// Convert all in c++.. it's just faster
 		int ret;
 		OpusError.throwOnError(ret = native_encode_bytes(in, numSamples, out));
 		return ret;
 	}
+	*/
 	
 	public void destroy() {
 		native_destroy();
