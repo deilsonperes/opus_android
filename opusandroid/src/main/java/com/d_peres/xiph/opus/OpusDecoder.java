@@ -1,5 +1,8 @@
 package com.d_peres.xiph.opus;
 
+import com.d_peres.xiph.opus.annotation.Channels;
+import com.d_peres.xiph.opus.annotation.SampleRate;
+
 @SuppressWarnings("unused")
 public class OpusDecoder {
 	
@@ -16,7 +19,9 @@ public class OpusDecoder {
 	private native int native_decode(byte[] in, int num_samples, short[] out);
 	private native void native_destroy();
 	
-	public OpusDecoder(int sampleRate, int numChannels) {
+	public OpusDecoder(
+			@SampleRate int sampleRate,
+			@Channels int numChannels) {
 		OpusError.throwOnError(native_init(sampleRate, numChannels));
 	}
 	
