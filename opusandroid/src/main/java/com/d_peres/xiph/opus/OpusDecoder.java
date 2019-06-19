@@ -15,9 +15,9 @@ public class OpusDecoder {
 	private int num_channels;
 	
 	/* native methods */
-	private native int native_init(int sample_rate, int num_channels);
-	private native int native_decode(byte[] in, int num_samples, short[] out);
-	private native void native_destroy();
+	private native int nativeInit(int sample_rate, int num_channels);
+	private native int nativeDecode(byte[] in, int num_samples, short[] out);
+	private native void nativeDestroy();
 	
 	/**
 	 * Creates an Opus Decoder.<br>
@@ -30,7 +30,7 @@ public class OpusDecoder {
 	public OpusDecoder(
 			@SampleRate int sampleRate,
 			@Channels int numChannels) {
-		OpusError.throwOnError(native_init(sampleRate, numChannels));
+		OpusError.throwOnError(nativeInit(sampleRate, numChannels));
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class OpusDecoder {
 	 */
 	public int decode(byte[] in, int num_samples, short[] out) {
 		int ret;
-		OpusError.throwOnError(ret = native_decode(in, num_samples, out));
+		OpusError.throwOnError(ret = nativeDecode(in, num_samples, out));
 		return ret;
 	}
 	
@@ -52,6 +52,6 @@ public class OpusDecoder {
 	 * the decoder can no longer be used.
 	 */
 	public void destroy() {
-		native_destroy();
+		nativeDestroy();
 	}
 }

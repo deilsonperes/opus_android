@@ -21,7 +21,7 @@ jint get_num_channels(JNIEnv* env, jobject obj) {
     return env->GetIntField(obj, fid);
 }
 
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1init(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeInit(
         JNIEnv *env, jobject obj, jint sample_rate, jint num_channels)
 {
     int result;
@@ -46,7 +46,7 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1init(
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1decode(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDecode(
         JNIEnv *env, jobject obj, jbyteArray opus_in, jint opus_num_samples, jshortArray pcm_out)
 {
     OpusDecoder* dec = get_decoder(env, obj);
@@ -73,7 +73,7 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1decode(
     return result;
 }
 
-JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1destroy(
+JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDestroy(
         JNIEnv *env, jobject obj)
 {
     OpusDecoder *dec = get_decoder(env, obj);

@@ -19,13 +19,13 @@ OpusDecoder *get_decoder(JNIEnv *, jobject);
 
 jint get_num_channels(JNIEnv*, jobject);
 
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1init(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeInit(
         JNIEnv *, jobject, jint, jint);
 
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1decode(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDecode(
         JNIEnv *, jobject, jbyteArray, jint, jshortArray);
 
-JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1destroy(
+JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDestroy(
         JNIEnv *, jobject);
 
 #ifdef __cplusplus
