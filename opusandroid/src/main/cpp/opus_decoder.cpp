@@ -53,7 +53,7 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1decode(
     int num_channels = get_num_channels(env, obj);
     int out_size = env->GetArrayLength(pcm_out);
 
-    auto* opus_data = static_cast<const unsigned char*>(env->GetByteArrayElements(opus_in, JNI_FALSE));
+    auto* opus_data = reinterpret_cast<const unsigned char*>(env->GetByteArrayElements(opus_in, JNI_FALSE));
     auto* native_pcm = env->GetShortArrayElements(pcm_out, JNI_FALSE);
 
     /* input
@@ -67,8 +67,8 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_native_1decode(
     int result = opus_decode(dec, opus_data, opus_num_samples, native_pcm, max_size, 0);
 
     // Release arrays
-    env->ReleaseByteArrayElements(opus_in, (jbyte *) opus_data, JNI_ABORT);
-    env->ReleaseShortArrayElements(pcm_out, native_pcm, JNI_ABORT);
+    env->ReleaseByteArrayElements(opus_in, (jbyte *) opus_data, 0);
+    env->ReleaseShortArrayElements(pcm_out, native_pcm, 0);
 
     return result;
 }
