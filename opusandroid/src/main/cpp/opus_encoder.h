@@ -4,8 +4,6 @@
 #ifndef OPUS_ANDROID_OPUS_ENCODER_H
 #define OPUS_ANDROID_OPUS_ENCODER_H
 
-#define JAVA_PREFIX Java_com_d_1peres_xiph_opus_OpusEncoder_
-
 #include <jni.h>
 #include "opus.h"
 
@@ -15,16 +13,25 @@ extern "C" {
 
 OpusEncoder *get_encoder(JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_1native_1init(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeInit(
         JNIEnv *, jobject, jint, jint, jint);
 // encode shorts
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1encode_1shorts(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeShorts(
         JNIEnv *, jobject, jshortArray, jint, jbyteArray);
 // encode bytes
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1encode_1bytes(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeBytes(
         JNIEnv *, jobject, jbyteArray, jint, jbyteArray);
+// ctl -> bitrate
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetBitrate(
+        JNIEnv *, jobject, jint);
+// ctl -> complexity
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetComplexity(
+        JNIEnv *, jobject, jint);
+// ctl -> vbr
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlEnableVbr(
+        JNIEnv *, jobject, jboolean);
 // destroy
-JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1destroy(
+JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeDestroy(
         JNIEnv *, jobject);
 
 #ifdef __cplusplus

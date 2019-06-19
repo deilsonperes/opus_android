@@ -5,7 +5,7 @@ import com.d_peres.xiph.opus.annotation.SampleRate;
 
 @SuppressWarnings("unused")
 public class OpusDecoder {
-	
+	// todo: add decoder ctl operations
 	static {
 		System.loadLibrary("jniopus");
 	}

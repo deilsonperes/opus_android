@@ -12,22 +12,27 @@ public class OpusEncoder {
 		System.loadLibrary("jniopus");
 	}
 	
-	private native int native_init(int sample_rate, int num_channels, int opus_application);
-	private native int native_encode_shorts(short[] in, int num_samples, byte[] out);
-	private native int native_encode_bytes(byte[] in, int num_samples, byte[] out);
-	private native void native_destroy();
+	private native int nativeInit(int sample_rate, int num_channels, int opus_application);
+	private native int nativeEncodeShorts(short[] in, int num_samples, byte[] out);
+	private native int nativeEncodeBytes(byte[] in, int num_samples, byte[] out);
+	private native void nativeDestroy();
+	
+	/* native ctl calls */
+	private native int ctlSetBitrate(int bitrate);
+	private native int ctlSetComplexity(int complexity);
+	private native int ctlEnableVbr(boolean enable);
 	
 	//todo: add documentation
 	public OpusEncoder(
 			@SampleRate int sampleRate,
 			@Channels int numChannels,
 			@Application int opusApplication) {
-		OpusError.throwOnError(native_init(sampleRate, numChannels, opusApplication));
+		OpusError.throwOnError(nativeInit(sampleRate, numChannels, opusApplication));
 	}
 	
 	public int encode(short[] in, int numSamples, byte[] out) {
 		int ret;
-		OpusError.throwOnError(ret = native_encode_shorts(in, numSamples, out));
+		OpusError.throwOnError(ret = nativeEncodeShorts(in, numSamples, out));
 		return ret;
 	}
 	
@@ -40,7 +45,20 @@ public class OpusEncoder {
 	}
 	*/
 	
+	/* ctl operations */
+	public int setBitrate(int bitrate) {
+		return ctlSetBitrate(bitrate);
+	}
+	
+	public int setComplexity(int complexity) {
+		return ctlSetComplexity(complexity);
+	}
+	
+	public int enableVbr(boolean enable) {
+		return ctlEnableVbr(enable);
+	}
+	
 	public void destroy() {
-		native_destroy();
+		nativeDestroy();
 	}
 }
