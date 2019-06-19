@@ -46,7 +46,7 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1init(
     return OPUS_OK;
 }
 // enc. shorts
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1encode_1shorts(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeShorts(
         JNIEnv *env, jobject obj, jshortArray pcm_in, jint num_samples, jbyteArray opus_out)
 {
     int encoded_bytes;
@@ -59,14 +59,14 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1encode_1s
     encoded_bytes = opus_encode(enc, input, num_samples, output, max_out_len);
 
     env->ReleaseShortArrayElements(pcm_in, input, JNI_ABORT);
-    env->ReleaseByteArrayElements(opus_out, reinterpret_cast<jbyte *>(output), JNI_ABORT);
+    env->ReleaseByteArrayElements(opus_out, reinterpret_cast<jbyte *>(output), 0);
 
     return encoded_bytes;
 }
 // enc. bytes
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "hicpp-signed-bitwise"
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1encode_1bytes(
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeBytes(
         JNIEnv *env, jobject obj, jbyteArray in_buff, jint num_samples, jbyteArray out_buff)
 {
     OpusEncoder* enc = get_encoder(env, obj);
@@ -110,8 +110,28 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1encode_1b
     return encoded_bytes;
 }
 #pragma clang diagnostic pop
+//ctl -> bitrate
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetBitrate(
+        JNIEnv *env, jobject obj, jint bitrate)
+{
+    OpusEncoder* enc = get_encoder(env, obj);
+    return opus_encoder_ctl(enc, OPUS_SET_BITRATE(bitrate));
+}
+// ctl -> complexity
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetComplexity(
+        JNIEnv *env, jobject obj, jint complexity)
+{
+    OpusEncoder* enc = get_encoder(env, obj);
+    return opus_encoder_ctl(enc, OPUS_SET_COMPLEXITY(complexity));
+}
+// ctl -> vbr
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlEnableVbr(
+        JNIEnv *env, jobject obj, jboolean enable){
+    OpusEncoder* enc = get_encoder(env, obj);
+    return opus_encoder_ctl(enc, OPUS_SET_VBR(enable));
+}
 // destroy
-JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_native_1destroy(JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeDestroy(JNIEnv *env, jobject obj)
 {
     OpusEncoder* enc = get_encoder(env, obj);
     opus_encoder_destroy(enc);
