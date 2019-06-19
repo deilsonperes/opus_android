@@ -33,6 +33,9 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlEnableVbr(
 // destroy
 JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeDestroy(
         JNIEnv *, jobject);
+// generic ctl test
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtl(
+        JNIEnv *, jobject, jint, jlong);
 
 #ifdef __cplusplus
 }

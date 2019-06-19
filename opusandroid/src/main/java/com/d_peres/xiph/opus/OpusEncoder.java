@@ -2,6 +2,7 @@ package com.d_peres.xiph.opus;
 
 import com.d_peres.xiph.opus.annotation.Application;
 import com.d_peres.xiph.opus.annotation.Channels;
+import com.d_peres.xiph.opus.annotation.EncoderCtl;
 import com.d_peres.xiph.opus.annotation.SampleRate;
 
 public class OpusEncoder {
@@ -21,6 +22,7 @@ public class OpusEncoder {
 	private native int ctlSetBitrate(int bitrate);
 	private native int ctlSetComplexity(int complexity);
 	private native int ctlEnableVbr(boolean enable);
+	private native int nativeEncoderCtl(int ctl, long arg);
 	
 	//todo: add documentation
 	public OpusEncoder(
@@ -56,6 +58,10 @@ public class OpusEncoder {
 	
 	public int enableVbr(boolean enable) {
 		return ctlEnableVbr(enable);
+	}
+	/* generic ctl: needs testing */
+	public int ctl(@EncoderCtl int ctl, int value) {
+		return nativeEncoderCtl(ctl, value);
 	}
 	
 	public void destroy() {
