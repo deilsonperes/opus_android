@@ -73,6 +73,59 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDecode(
     return result;
 }
 
+JNIEXPORT jlong JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDecoderCtl(
+        JNIEnv *env, jobject obj, jint ctl, jlong arg)
+{
+    OpusDecoder* dec = get_decoder(env, obj);
+    auto oarg = static_cast<opus_int32>(arg);
+
+    switch (ctl) {
+        // generic ctls (GET_FINAL_RANGE is not useful)
+        case OPUS_RESET_STATE:
+            oarg = opus_decoder_ctl(dec, OPUS_RESET_STATE);
+            break;
+
+        case OPUS_GET_BANDWIDTH_REQUEST:
+            opus_decoder_ctl(dec, OPUS_GET_BANDWIDTH(&oarg));
+            break;
+
+        case OPUS_GET_SAMPLE_RATE_REQUEST:
+            opus_decoder_ctl(dec, OPUS_GET_SAMPLE_RATE(&oarg));
+            break;
+
+        case OPUS_SET_PHASE_INVERSION_DISABLED_REQUEST:
+            opus_decoder_ctl(dec, OPUS_SET_PHASE_INVERSION_DISABLED(oarg));
+            break;
+
+        case OPUS_GET_PHASE_INVERSION_DISABLED_REQUEST:
+            opus_decoder_ctl(dec, OPUS_GET_PHASE_INVERSION_DISABLED(&oarg));
+            break;
+
+            // decoder ctls
+        case OPUS_SET_GAIN_REQUEST:
+            oarg = opus_decoder_ctl(dec, OPUS_SET_GAIN(oarg));
+            break;
+
+        case OPUS_GET_GAIN_REQUEST:
+            opus_decoder_ctl(dec, OPUS_GET_GAIN(&oarg));
+            break;
+
+        case OPUS_GET_LAST_PACKET_DURATION_REQUEST:
+            opus_decoder_ctl(dec, OPUS_GET_LAST_PACKET_DURATION(&oarg));
+            break;
+
+        case OPUS_GET_PITCH_REQUEST:
+            opus_decoder_ctl(dec, OPUS_GET_PITCH(&oarg));
+            break;
+
+        default:
+            // if ctl is not on the list, return bad argumend
+            return OPUS_BAD_ARG;
+    }
+
+    return oarg;
+}
+
 JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDestroy(
         JNIEnv *env, jobject obj)
 {

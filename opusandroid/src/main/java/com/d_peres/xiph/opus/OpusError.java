@@ -1,17 +1,19 @@
 package com.d_peres.xiph.opus;
 
+import android.util.Log;
+
 @SuppressWarnings("WeakerAccess")
 public class OpusError extends RuntimeException {
 	
 	// Error Codes
-	private static final int OPUS_OK               =  0;
-	private static final int OPUS_BAD_ARG          = -1;
-	private static final int OPUS_BUFFER_TOO_SMALL = -2;
-	private static final int OPUS_INTERNAL_ERROR   = -3;
-	private static final int OPUS_INVALID_PACKET   = -4;
-	private static final int OPUS_UNIMPLEMENTED    = -5;
-	private static final int OPUS_INVALID_STATE    = -6;
-	private static final int OPUS_ALLOC_FAIL       = -7;
+	static final int OPUS_OK               =  0;
+	static final int OPUS_BAD_ARG          = -1;
+	static final int OPUS_BUFFER_TOO_SMALL = -2;
+	static final int OPUS_INTERNAL_ERROR   = -3;
+	static final int OPUS_INVALID_PACKET   = -4;
+	static final int OPUS_UNIMPLEMENTED    = -5;
+	static final int OPUS_INVALID_STATE    = -6;
+	static final int OPUS_ALLOC_FAIL       = -7;
 	
 	//todo add documentation
 	/* No Error */
@@ -26,6 +28,12 @@ public class OpusError extends RuntimeException {
 	static void throwOnError(int error_code){
 		if(error_code < OPUS_OK) {
 			throw new RuntimeException("Opus error (" + error_code + "): " + getErrorStr(error_code));
+		}
+	}
+	
+	static void warnOnError(int error_code) {
+		if(error_code < OPUS_OK) {
+			Log.e("OPUS_ANDROID", "Opus warning (" + error_code + "): " + getErrorStr(error_code));
 		}
 	}
 	

@@ -25,6 +25,9 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeInit(
 JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDecode(
         JNIEnv *, jobject, jbyteArray, jint, jshortArray);
 
+JNIEXPORT jlong JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDecoderCtl(
+        JNIEnv *, jobject, jint, jlong);
+
 JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusDecoder_nativeDestroy(
         JNIEnv *, jobject);
 
