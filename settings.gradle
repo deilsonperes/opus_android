@@ -1,1 +1,1 @@
-include ':opusandroid'
+include ':opusandroid', ':opustestapp'
