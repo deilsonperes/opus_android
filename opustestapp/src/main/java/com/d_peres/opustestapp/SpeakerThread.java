@@ -3,12 +3,12 @@ package com.d_peres.opustestapp;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.SystemClock;
 
 import com.d_peres.easylogger.EasyLogger;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class SpeakerThread {
 	private EasyLogger log = new EasyLogger("OPA", getClass());
@@ -36,13 +36,15 @@ public class SpeakerThread {
 			short[] buff;
 			
 			while (true) {
-				if ((buff = queue_ref.get().poll()) != null) {
-					int ret = track.write(buff, 0, buff.length);
-					if (ret < 0) {
-						log.i("Error: %d", ret);
+				try {
+					if ((buff = queue_ref.get().poll(100, TimeUnit.MILLISECONDS)) != null) {
+						int ret = track.write(buff, 0, buff.length);
+						if (ret < 0) {
+							log.i("Error: %d", ret);
+						}
 					}
-				} else {
-					SystemClock.sleep(40);
+				} catch (InterruptedException e) {
+					// ignore and continue
 				}
 			}
 		}

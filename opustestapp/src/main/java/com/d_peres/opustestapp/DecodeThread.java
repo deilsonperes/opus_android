@@ -1,7 +1,5 @@
 package com.d_peres.opustestapp;
 
-import android.os.SystemClock;
-
 import com.d_peres.easylogger.EasyLogger;
 import com.d_peres.xiph.opus.OpusConstants;
 import com.d_peres.xiph.opus.OpusDecoder;
@@ -9,6 +7,7 @@ import com.d_peres.xiph.opus.OpusDecoder;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class DecodeThread {
 	private EasyLogger log = new EasyLogger("OPA", getClass());
@@ -20,17 +19,23 @@ public class DecodeThread {
 		@Override
 		public void run() {
 			OpusDecoder dec = new OpusDecoder(24000, OpusConstants.CH_MONO);
+			log.i("Phase inversion disabled: %b", dec.ctlGetPhaseInversionDisabled());
+			dec.ctlSetPhaseInversionDisabled(true);
+			log.i("Phase inversion disabled: %b", dec.ctlGetPhaseInversionDisabled());
+			dec.ctlSetPhaseInversionDisabled(false);
+			log.i("Phase inversion disabled: %b", dec.ctlGetPhaseInversionDisabled());
 			
 			byte[] opus_buff;
 			short[] pcm_buff = new short[2048];
 			
-			int log_cnt = 0;
 			while (true) {
-				if((opus_buff = opus_queue_ref.get().poll()) != null) {
-					int pcm_dec = dec.decode(opus_buff, opus_buff.length, pcm_buff);
-					pcm_queue_ref.get().offer(Arrays.copyOf(pcm_buff, pcm_dec));
-				} else {
-					SystemClock.sleep(40);
+				try {
+					if((opus_buff = opus_queue_ref.get().poll(100, TimeUnit.MILLISECONDS)) != null) {
+						int pcm_dec = dec.decode(opus_buff, opus_buff.length, pcm_buff);
+						pcm_queue_ref.get().offer(Arrays.copyOf(pcm_buff, pcm_dec));
+					}
+				} catch (InterruptedException e) {
+					// ignore
 				}
 			}
 		}
