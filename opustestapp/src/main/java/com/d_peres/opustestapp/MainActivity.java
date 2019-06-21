@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.d_peres.xiph.opus.OpusConstants;
+
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
 	private ArrayBlockingQueue<short []> rec_pcm_queue;
 	private ArrayBlockingQueue<byte[]> opus_queue;
 	private ArrayBlockingQueue<short []> spk_pcm_queue;
+	
+	public static final int sample_rate = 8000;
+	public static final int size_ms = 80;
+	public static final int opus_application = OpusConstants.OPUS_APPLICATION_RESTRICTED_LOWDELAY;
 	
 	void init() {
 		rec_pcm_queue = new ArrayBlockingQueue<>(50);

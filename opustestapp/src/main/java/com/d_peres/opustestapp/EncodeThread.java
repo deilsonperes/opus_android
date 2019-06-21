@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static com.d_peres.opustestapp.MainActivity.opus_application;
+import static com.d_peres.opustestapp.MainActivity.sample_rate;
+
 public class EncodeThread {
 	private EasyLogger log = new EasyLogger("OPA", getClass());
 	
@@ -20,7 +23,9 @@ public class EncodeThread {
 	private Thread encode_thread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			OpusEncoder enc = new OpusEncoder(24000, OpusConstants.CH_MONO, OpusConstants.OPUS_APPLICATION_AUDIO);
+			OpusEncoder enc = new OpusEncoder(sample_rate, OpusConstants.CH_MONO, opus_application);
+			enc.setComplexity(0);
+			enc.setBitrate(16000);
 			
 			short[] buffer;
 			byte[] opus_out = new byte[4096];

@@ -10,6 +10,9 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import static com.d_peres.opustestapp.MainActivity.sample_rate;
+import static com.d_peres.opustestapp.MainActivity.size_ms;
+
 public class RecordThread {
 	private EasyLogger log = new EasyLogger("OPA", getClass());
 	
@@ -22,10 +25,10 @@ public class RecordThread {
 		public void run() {
 			
 			int audioSource = MediaRecorder.AudioSource.MIC;
-            int sampleRateInHz = 24000;
+            int sampleRateInHz = sample_rate;
             int channelConfig = AudioFormat.CHANNEL_IN_MONO;
             int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-            int bufferSizeInBytes = (sampleRateInHz / 1000 * 40 * 2);
+            int bufferSizeInBytes = (sampleRateInHz / 1000 * size_ms * 2);
             
             short[] aud_buff = new short[bufferSizeInBytes];
             int pcm_samples_read;

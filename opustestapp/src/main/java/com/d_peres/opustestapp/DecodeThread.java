@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static com.d_peres.opustestapp.MainActivity.sample_rate;
+
 public class DecodeThread {
 	private EasyLogger log = new EasyLogger("OPA", getClass());
 	
@@ -18,12 +20,7 @@ public class DecodeThread {
 	private Thread decode_thread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			OpusDecoder dec = new OpusDecoder(24000, OpusConstants.CH_MONO);
-			log.i("Phase inversion disabled: %b", dec.ctlGetPhaseInversionDisabled());
-			dec.ctlSetPhaseInversionDisabled(true);
-			log.i("Phase inversion disabled: %b", dec.ctlGetPhaseInversionDisabled());
-			dec.ctlSetPhaseInversionDisabled(false);
-			log.i("Phase inversion disabled: %b", dec.ctlGetPhaseInversionDisabled());
+			OpusDecoder dec = new OpusDecoder(sample_rate, OpusConstants.CH_MONO);
 			
 			byte[] opus_buff;
 			short[] pcm_buff = new short[2048];

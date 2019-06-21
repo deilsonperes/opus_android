@@ -10,6 +10,9 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static com.d_peres.opustestapp.MainActivity.sample_rate;
+import static com.d_peres.opustestapp.MainActivity.size_ms;
+
 public class SpeakerThread {
 	private EasyLogger log = new EasyLogger("OPA", getClass());
 	
@@ -19,10 +22,10 @@ public class SpeakerThread {
 		@Override
 		public void run() {
 			int streamType = AudioManager.STREAM_MUSIC;
-			int sampleRateInHz = 24000;
+			int sampleRateInHz = sample_rate;
 			int channelConfig = AudioFormat.CHANNEL_OUT_MONO;
 			int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-			int bufferSizeInBytes = (sampleRateInHz / 1000 * 40 * 2);
+			int bufferSizeInBytes = (sampleRateInHz / 1000 * size_ms * 2);
 			int mode = AudioTrack.MODE_STREAM;
 			AudioTrack track = new AudioTrack(
 					streamType,
