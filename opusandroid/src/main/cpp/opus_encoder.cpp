@@ -15,7 +15,7 @@ OpusEncoder* get_encoder(JNIEnv *env, jobject obj)
     jfieldID fid = env->GetFieldID(cls, "enc_address", "J");
     return reinterpret_cast<OpusEncoder *>(env->GetLongField(obj, fid));
 }
-
+/* ********** init ********** */
 JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeInit(
         JNIEnv *env, jobject obj, jint sample_rate,jint num_channels,jint application)
 {
@@ -45,7 +45,8 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeInit(
 
     return OPUS_OK;
 }
-// enc. shorts
+
+/* ********** enc. shorts ********** */
 JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeShorts(
         JNIEnv *env, jobject obj, jshortArray pcm_in, jint num_samples, jbyteArray opus_out)
 {
@@ -63,9 +64,9 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeShort
 
     return encoded_bytes;
 }
-// enc. bytes
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "hicpp-signed-bitwise"
+
+// todo: implement byte encoding
+/* ********** enc. bytes ********** */
 JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeBytes(
         JNIEnv *env, jobject obj, jbyteArray in_buff, jint num_samples, jbyteArray out_buff)
 {
@@ -109,28 +110,198 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeBytes
     // return the result
     return encoded_bytes;
 }
-#pragma clang diagnostic pop
-//ctl -> bitrate
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetBitrate(
-        JNIEnv *env, jobject obj, jint bitrate)
+
+/* ********** ctl set ********** */
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtlSet(
+        JNIEnv *env, jobject obj, jint ctl, jlong arg)
 {
     OpusEncoder* enc = get_encoder(env, obj);
-    return opus_encoder_ctl(enc, OPUS_SET_BITRATE(bitrate));
+    auto oarg = static_cast<opus_int32 >(arg);
+    int result;
+
+    switch (ctl) {
+        // generic ctls (GET_FINAL_RANGE is not useful)
+        case OPUS_RESET_STATE:
+            result = opus_encoder_ctl(enc, OPUS_RESET_STATE);
+            break;
+
+        case OPUS_SET_PHASE_INVERSION_DISABLED_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_PHASE_INVERSION_DISABLED(oarg));
+            break;
+
+            // encoder ctls
+        case OPUS_SET_COMPLEXITY_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_COMPLEXITY(oarg));
+            break;
+
+        case OPUS_SET_BITRATE_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_BITRATE(oarg));
+            break;
+
+        case OPUS_SET_VBR_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_VBR(oarg));
+            break;
+
+        case OPUS_SET_VBR_CONSTRAINT_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_VBR_CONSTRAINT(oarg));
+            break;
+
+        case OPUS_SET_FORCE_CHANNELS_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_FORCE_CHANNELS(oarg));
+            break;
+
+        case OPUS_SET_MAX_BANDWIDTH_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_MAX_BANDWIDTH(oarg));
+            break;
+
+        case OPUS_SET_BANDWIDTH_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_BANDWIDTH(oarg));
+            break;
+
+        case OPUS_SET_SIGNAL_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_SIGNAL(oarg));
+            break;
+
+        case OPUS_SET_APPLICATION_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_APPLICATION(oarg));
+            break;
+
+        case OPUS_SET_INBAND_FEC_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_INBAND_FEC(oarg));
+            break;
+
+        case OPUS_SET_PACKET_LOSS_PERC_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_PACKET_LOSS_PERC(oarg));
+            break;
+
+        case OPUS_SET_DTX_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_DTX(oarg));
+            break;
+
+        case OPUS_SET_LSB_DEPTH_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_LSB_DEPTH(oarg));
+            break;
+
+        case OPUS_SET_EXPERT_FRAME_DURATION_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_EXPERT_FRAME_DURATION(oarg));
+            break;
+
+        case OPUS_SET_PREDICTION_DISABLED_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_SET_PREDICTION_DISABLED(oarg));
+            break;
+
+        default:
+            // if ctl is not on the list, return bad argumend
+            result = OPUS_BAD_ARG;
+    }
+
+    if (result != OPUS_OK)
+    {
+        logw("Error while processing ctl '%d': result was %d", ctl, result);
+    } else {
+        return oarg;
+    }
 }
-// ctl -> complexity
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetComplexity(
-        JNIEnv *env, jobject obj, jint complexity)
+
+/* ********** ctl get ********** */
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtlGet(
+        JNIEnv *env, jobject obj, jint ctl)
 {
     OpusEncoder* enc = get_encoder(env, obj);
-    return opus_encoder_ctl(enc, OPUS_SET_COMPLEXITY(complexity));
+    opus_int32 oarg = 0;
+    int result;
+
+
+    switch (ctl) {
+        // generic ctls (GET_FINAL_RANGE is not useful)
+        case OPUS_GET_BANDWIDTH_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_BANDWIDTH(&oarg));
+            break;
+
+        case OPUS_GET_SAMPLE_RATE_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_SAMPLE_RATE(&oarg));
+            break;
+
+
+        case OPUS_GET_PHASE_INVERSION_DISABLED_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_PHASE_INVERSION_DISABLED(&oarg));
+            break;
+
+        // encoder ctls
+        case OPUS_GET_COMPLEXITY_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_COMPLEXITY(&oarg));
+            break;
+
+        case OPUS_GET_BITRATE_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_BITRATE(&oarg));
+            break;
+
+        case OPUS_GET_VBR_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_BITRATE(&oarg));
+            break;
+
+        case OPUS_GET_VBR_CONSTRAINT_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_VBR_CONSTRAINT(&oarg));
+            break;
+
+        case OPUS_GET_FORCE_CHANNELS_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_FORCE_CHANNELS(&oarg));
+            break;
+
+        case OPUS_GET_MAX_BANDWIDTH_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_MAX_BANDWIDTH(&oarg));
+            break;
+
+        case OPUS_GET_SIGNAL_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_SIGNAL(&oarg));
+            break;
+
+        case OPUS_GET_APPLICATION_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_APPLICATION(&oarg));
+            break;
+
+        case OPUS_GET_LOOKAHEAD_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_LOOKAHEAD(&oarg));
+            break;
+
+        case OPUS_GET_INBAND_FEC_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_INBAND_FEC(&oarg));
+            break;
+
+        case OPUS_GET_PACKET_LOSS_PERC_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_PACKET_LOSS_PERC(&oarg));
+            break;
+
+        case OPUS_GET_DTX_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_DTX(&oarg));
+            break;
+
+        case OPUS_GET_LSB_DEPTH_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_LSB_DEPTH(&oarg));
+            break;
+
+        case OPUS_GET_EXPERT_FRAME_DURATION_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_EXPERT_FRAME_DURATION(&oarg));
+            break;
+
+        case OPUS_GET_PREDICTION_DISABLED_REQUEST:
+            result = opus_encoder_ctl(enc, OPUS_GET_PREDICTION_DISABLED(&oarg));
+            break;
+
+        default:
+            // if ctl is not on the list, return bad argumend
+            result = OPUS_BAD_ARG;
+    }
+
+    if (result != OPUS_OK)
+    {
+        logw("Error while processing ctl '%d': result was %d", ctl, result);
+    } else {
+        return oarg;
+    }
 }
-// ctl -> vbr
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlEnableVbr(
-        JNIEnv *env, jobject obj, jboolean enable){
-    OpusEncoder* enc = get_encoder(env, obj);
-    return opus_encoder_ctl(enc, OPUS_SET_VBR(enable));
-}
-// destroy
+
+/* ********** destroy ********** */
 JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeDestroy(JNIEnv *env, jobject obj)
 {
     OpusEncoder* enc = get_encoder(env, obj);
@@ -139,163 +310,6 @@ JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeDestroy(JNI
     jclass cls = env->GetObjectClass(obj);
     jfieldID fid = env->GetFieldID(cls, "enc_address", "J");
     env->SetLongField(obj, fid, (jlong) NULL);
-}
-// generic ctl test
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtl(
-        JNIEnv *env, jobject obj, jint ctl, jlong arg)
-{
-    OpusEncoder* enc = get_encoder(env, obj);
-    auto oarg = static_cast<opus_int32 >(arg);
-
-    switch (ctl) {
-        // generic ctls (GET_FINAL_RANGE is not useful)
-        case OPUS_RESET_STATE:
-            oarg = opus_encoder_ctl(enc, OPUS_RESET_STATE);
-            break;
-
-        case OPUS_GET_BANDWIDTH_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_BANDWIDTH(&oarg));
-            break;
-
-        case OPUS_GET_SAMPLE_RATE_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_SAMPLE_RATE(&oarg));
-            break;
-
-        case OPUS_SET_PHASE_INVERSION_DISABLED_REQUEST:
-            opus_encoder_ctl(enc, OPUS_SET_PHASE_INVERSION_DISABLED(oarg));
-            break;
-
-        case OPUS_GET_PHASE_INVERSION_DISABLED_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_PHASE_INVERSION_DISABLED(&oarg));
-            break;
-
-        // encoder ctls
-        case OPUS_SET_COMPLEXITY_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_COMPLEXITY(oarg));
-            break;
-
-        case OPUS_GET_COMPLEXITY_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_COMPLEXITY(&oarg));
-            break;
-
-        case OPUS_SET_BITRATE_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_BITRATE(oarg));
-            break;
-
-        case OPUS_GET_BITRATE_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_BITRATE(&oarg));
-            break;
-
-        case OPUS_SET_VBR_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_VBR(oarg));
-            break;
-
-        case OPUS_GET_VBR_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_BITRATE(&oarg));
-            break;
-
-        case OPUS_SET_VBR_CONSTRAINT_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_VBR_CONSTRAINT(oarg));
-            break;
-
-        case OPUS_GET_VBR_CONSTRAINT_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_VBR_CONSTRAINT(&oarg));
-            break;
-
-        case OPUS_SET_FORCE_CHANNELS_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_FORCE_CHANNELS(oarg));
-            break;
-
-        case OPUS_GET_FORCE_CHANNELS_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_FORCE_CHANNELS(&oarg));
-            break;
-
-        case OPUS_SET_MAX_BANDWIDTH_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_MAX_BANDWIDTH(oarg));
-            break;
-
-        case OPUS_GET_MAX_BANDWIDTH_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_MAX_BANDWIDTH(&oarg));
-            break;
-
-        case OPUS_SET_BANDWIDTH_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_BANDWIDTH(oarg));
-            break;
-
-        case OPUS_SET_SIGNAL_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_SIGNAL(oarg));
-            break;
-
-        case OPUS_GET_SIGNAL_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_SIGNAL(&oarg));
-            break;
-
-        case OPUS_SET_APPLICATION_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_APPLICATION(oarg));
-            break;
-
-        case OPUS_GET_APPLICATION_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_APPLICATION(&oarg));
-            break;
-
-        case OPUS_GET_LOOKAHEAD_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_LOOKAHEAD(&oarg));
-            break;
-
-        case OPUS_SET_INBAND_FEC_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_INBAND_FEC(oarg));
-            break;
-
-        case OPUS_GET_INBAND_FEC_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_INBAND_FEC(&oarg));
-            break;
-
-        case OPUS_SET_PACKET_LOSS_PERC_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_PACKET_LOSS_PERC(oarg));
-            break;
-
-        case OPUS_GET_PACKET_LOSS_PERC_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_PACKET_LOSS_PERC(&oarg));
-            break;
-
-        case OPUS_SET_DTX_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_DTX(oarg));
-            break;
-
-        case OPUS_GET_DTX_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_DTX(&oarg));
-            break;
-
-        case OPUS_SET_LSB_DEPTH_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_LSB_DEPTH(oarg));
-            break;
-
-        case OPUS_GET_LSB_DEPTH_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_LSB_DEPTH(&oarg));
-            break;
-
-        case OPUS_SET_EXPERT_FRAME_DURATION_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_EXPERT_FRAME_DURATION(oarg));
-            break;
-
-        case OPUS_GET_EXPERT_FRAME_DURATION_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_EXPERT_FRAME_DURATION(&oarg));
-            break;
-
-        case OPUS_SET_PREDICTION_DISABLED_REQUEST:
-            oarg = opus_encoder_ctl(enc, OPUS_SET_PREDICTION_DISABLED(oarg));
-            break;
-
-        case OPUS_GET_PREDICTION_DISABLED_REQUEST:
-            opus_encoder_ctl(enc, OPUS_GET_PREDICTION_DISABLED(&oarg));
-            break;
-
-        default:
-            // if ctl is not on the list, return bad argumend
-            return OPUS_BAD_ARG;
-    }
-
-    return oarg;
 }
 
 #ifdef __cplusplus

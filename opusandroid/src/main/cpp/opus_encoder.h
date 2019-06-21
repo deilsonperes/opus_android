@@ -21,21 +21,15 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeShort
 // encode bytes
 JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncodeBytes(
         JNIEnv *, jobject, jbyteArray, jint, jbyteArray);
-// ctl -> bitrate
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetBitrate(
+// ctl set
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtlSet(
+        JNIEnv *, jobject, jint, jlong);
+// ctl get
+JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtlGet(
         JNIEnv *, jobject, jint);
-// ctl -> complexity
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlSetComplexity(
-        JNIEnv *, jobject, jint);
-// ctl -> vbr
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_ctlEnableVbr(
-        JNIEnv *, jobject, jboolean);
 // destroy
 JNIEXPORT void JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeDestroy(
         JNIEnv *, jobject);
-// generic ctl test
-JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtl(
-        JNIEnv *, jobject, jint, jlong);
 
 #ifdef __cplusplus
 }
