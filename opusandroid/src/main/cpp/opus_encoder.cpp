@@ -198,6 +198,7 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtlS
     if (result != OPUS_OK)
     {
         logw("Error while processing ctl '%d': result was %d", ctl, result);
+        return result;
     } else {
         return oarg;
     }
@@ -296,6 +297,7 @@ JNIEXPORT jint JNICALL Java_com_d_1peres_xiph_opus_OpusEncoder_nativeEncoderCtlG
     if (result != OPUS_OK)
     {
         logw("Error while processing ctl '%d': result was %d", ctl, result);
+        return result;
     } else {
         return oarg;
     }
