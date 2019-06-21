@@ -24,8 +24,8 @@ public class EncodeThread {
 		@Override
 		public void run() {
 			OpusEncoder enc = new OpusEncoder(sample_rate, OpusConstants.CH_MONO, opus_application);
-			enc.setComplexity(0);
-			enc.setBitrate(16000);
+			enc.ctlSetComplexity(10);
+			enc.ctlSetBitrate(94000);
 			
 			short[] buffer;
 			byte[] opus_out = new byte[4096];
